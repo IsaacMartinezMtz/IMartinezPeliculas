@@ -1,0 +1,43 @@
+﻿@model Movie;
+@{
+    ViewData["Title"] = "GetAllPeliFav";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="height: 300%">
+    <div class="text-lg-start">
+        <h2>Peliculas Populares</h2>
+    </div>
+    <hr />
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="@Url.Action("GetAllPeliPopu", "Peliculas", new {page = ViewBag.page-1}) tabindex = " -1">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("GetAllPeliPopu", "Peliculas", new {page = 1})">1</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("GetAllPeliPopu", "Peliculas", new {page = 2})"></a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("GetAllPeliPopu", "Peliculas", new {page = 3})">3</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("GetAllPeliPopu", "Peliculas", new {page = ViewBag.page+1})">Next</a></li>
+        </ul>
+    </nav>
+    <div class="row justify-content-center">
+        @foreach (Movie movie in Model.Movies)
+        {
+
+            <div class="col-4">
+                <div class="card" style="width: 18rem;">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="@movie.Image" alt="Card image cap" width="150" height="225">
+                        <div class="card-body limited-text">
+                            <h5 class="card-title fs-1">@movie.Title</h5>
+                            <p class="card-text ">@movie.Description</p>
+                            <h6>@movie.date</h6>
+                            <p class="card-text">
+                                <a href="@Url.Action("DelePeliculas","Peliculas", new {idMovie = movie.IdMovie})" class="btn btn-outline-danger"><i class="bi bi-heart"></i></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
