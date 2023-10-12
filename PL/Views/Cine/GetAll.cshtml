@@ -1,0 +1,69 @@
+﻿@model ML.Cine;
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+<div class="text-lg-start">
+    <h2>Cines</h2>
+    <h5>Listas de Cines registrados </h5>
+</div>
+<hr />
+
+<a type="button" href="@Url.Action("Form", "Cine")" class="btn btn-outline-success btn-lg w-25 p-3"><i class="bi bi-person-add"></i></a>
+<hr />
+<div class=" table-responsive">
+    <table class="table table-hover" id="TablaDepartamento">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Id Cine</th>
+                <th scope="col">Nombre del cine</th>
+                <th scope="col">Direcion del cine</th>
+                <th scope="col">Zona</th>
+                <th scope="col">Ventas</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ML.Cine cine in Model.Cines)
+            {
+                <tr>
+                    <td>
+                        <a type="button" class="btn btn-outline-warning btn-lg" href="@Url.Action("Form", "Cine", new {IdCine = cine.IdCine})"><i class="bi bi-pencil-square"></i></a>
+                    </td>
+                    <td>@cine.IdCine</td>
+                    <td>@cine.Nombre</td>
+                    <td>@cine.Direccion</td>
+                    <td>@cine.Zona.Nombre</td>
+                    <td>@cine.Ventas</td>
+                    <td>
+                        <a href="@Url.Action("Delete","Cine" , new { IdCine = cine.IdCine})" onclick="return confirm('Estas seguro de eliminar este registro');" type="button" class="btn btn-outline-danger btn-lg"><i class="bi bi-trash3"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<script type="text/javascript">
+    let table = new DataTable('#TablaDepartamento', {
+        responsive: true,
+        "lengthMenu": [[5, 10, 15, 20, -1], [5, 10, 15, 20, "Todos"]],
+        searching: false,
+        language: {
+            url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
+        },
+    });
+
+</script>
+
+
+
+
+

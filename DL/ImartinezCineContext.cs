@@ -17,6 +17,8 @@ public partial class ImartinezCineContext : DbContext
 
     public virtual DbSet<Cine> Cines { get; set; }
 
+    public virtual DbSet<Producto> Productos { get; set; }
+
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,6 +43,17 @@ public partial class ImartinezCineContext : DbContext
             entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.Cines)
                 .HasForeignKey(d => d.IdZona)
                 .HasConstraintName("FK__Cine__IdZona__1273C1CD");
+        });
+
+        modelBuilder.Entity<Producto>(entity =>
+        {
+            entity.HasKey(e => e.IdProductos).HasName("PK__Producto__718C7D0737EA7A74");
+
+            entity.Property(e => e.Imagen).IsUnicode(false);
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Precio).HasColumnType("decimal(18, 0)");
         });
 
         modelBuilder.Entity<Zona>(entity =>

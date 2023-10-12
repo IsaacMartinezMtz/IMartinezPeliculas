@@ -9,6 +9,6 @@ namespace ML
     public class Zona
     {
         public int IdZona { get; set; }
-        public int Nombre { get; set; }
+        public string Nombre { get; set; }
     }
 }

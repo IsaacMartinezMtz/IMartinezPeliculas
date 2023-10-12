@@ -26,7 +26,7 @@ namespace PL.Controllers
                     dynamic resultJson = JObject.Parse(readTask.Result);
                     readTask.Wait();
                     movie.Movies = new List<object>();
-                    foreach (var item in resultJson.results)
+                     foreach(var item in resultJson.results) 
                     {
                         Movie movies = new Movie();
                         movies.IdMovie = item.id;
@@ -156,5 +156,6 @@ namespace PL.Controllers
             }
             return PartialView("Modal");
         }
+
     }
 }

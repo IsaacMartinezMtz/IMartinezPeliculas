@@ -1,0 +1,161 @@
+﻿@model ML.Cine
+@{
+    ViewData["Title"] = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-lg-start">
+    <h2>Cines</h2>
+    <h5>Ingrese los datos del Cine</h5>
+</div>
+<hr />
+<style type="text/css">
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+@using (Html.BeginForm("Form", "Cine", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(Model => Model.IdCine, new {@Id="txtIdCine"})
+    <div class="container text-center">
+        <div class="row align-items-start">
+
+            <div class="col">
+
+                @Html.LabelFor(model => Model.Nombre, new { @class = "hidden" })
+                @Html.TextBoxFor(model => Model.Nombre, new { @class = "form-control hidden", @onkeypress = "return lettersOnly(event, 'lblErrorNombre')" })
+            </div>
+            <div class="col">
+                @Html.LabelFor(model => Model.Zona.IdZona, new { @class = "hidden" })
+                @Html.TextBoxFor(model => Model.Zona.IdZona, new { @class = "form-control hidden", @onkeypress = "return lettersOnly(event, 'lblErrorNombre')" })
+            </div>
+            <div class="col">
+                @Html.LabelFor(model => Model.Ventas, new { @class = "hidden" })
+                @Html.TextBoxFor(model => Model.Ventas, new { @class = "form-control hidden" })
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row mb-4">
+            @if(Model.IdCine == 0)
+            {
+                <div class="col-md-6">
+                    @Html.LabelFor(model => Model.Direccion, new { @class = "hidden" })
+                    @Html.TextBoxFor(model => Model.Direccion, new { @class = "form-control hidden", @readonly = true ,@id="txtdirecion" })
+                </div>
+            }
+            else
+            {
+                <div class="col-md-6">
+                    @Html.LabelFor(model => Model.Direccion, new { @class = "hidden" })
+                    @Html.TextBoxFor(model => Model.Direccion, new { @class = "form-control hidden", @readonly = true ,@id="txtdirecion", @onchange= "codeAddress()" })
+                </div>
+            }
+            <div class="col-md-6">
+                <div class="text-center" style="margin-top:25px">
+                    <button class="btn btn-success" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                    <a id="btnCancelar" class="btn btn-danger" href="@Url.Action("GetAll", "Cine")"><i class="fa-solid fa-right-from-bracket"></i> Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="text-lg-start">
+        <p>Selecciona la direccion del cine en el mapa</p>
+    </div>
+   
+    <div>
+        <div id="map"></div>
+
+    </div>
+    
+}
+@section Scripts{
+    <script type="text/javascript">
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw",
+            v: "beta"
+            // Add other bootstrap parameters as needed, using camel case.
+            // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
+        });
+
+        // Initialize and add the map
+        let map;
+        var marker;
+
+        async function initMap() {
+            // The location of Uluru
+            const position = { lat: 19.430570307662446, lng: -99.16166352568936 };
+            // Request needed libraries.
+
+            const { Map } = await google.maps.importLibrary("maps");
+
+            // The map, centered at Uluru
+            map = new Map(document.getElementById("map"), {
+                zoom: 13,
+                center: position,
+                mapId: "DEMO_MAP_ID",
+            });
+
+            // The marker, positioned at Uluru
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Presiona la locacion",
+                position: position,
+            });
+            infoWindow.open(map);
+
+
+
+
+            //obtener la dirrecion
+            google.maps.event.addListener(map, 'click', function (event) {
+                infoWindow.close();
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({
+                    'latLng': event.latLng
+                }, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[0]) {
+                            $("#txtdirecion").val(results[0].formatted_address);
+                            
+
+                             marker = new google.maps.Marker({
+                               
+                                map: map,
+                                position: results[0].geometry.location
+                            });
+                            // To add the marker to the map, call setMap();
+                            
+                            marker.setMap(map);
+                        }
+                         
+                    }
+                    
+                });
+                marker.setMap(null);
+            })
+            function codeAddress() {
+                var address = document.getElementById('txtdirecion').value;
+                geocoder.geocode({ '"txtdirecion': address }, function (results, status) {
+                    if (status == 'OK') {
+                        map.setCenter(results[0].geometry.location);
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location
+                        });
+                    } else {
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            }
+
+         }
+
+        initMap();
+
+    </script>
+}
+
+
+

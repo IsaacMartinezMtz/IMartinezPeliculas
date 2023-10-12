@@ -1,0 +1,178 @@
+﻿@model ML.Cine
+@{
+    ViewData["Title"] = "Estadistica";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-6">
+            <div class="text-lg-start">
+                <h3>Total de ventas por zona</h3>
+                
+            </div>
+            <hr />
+            <div id="chartContainer" style="height: 400px; width: 100%;"></div>
+        </div>
+        <div class="col-6">
+            <div class="text-lg-start">
+                <h3>Puntos de venta</h3>
+               
+            </div>
+            <hr />
+            
+                <div id="map"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript"> 
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw",
+            v: "beta"
+            // Add other bootstrap parameters as needed, using camel case.
+            // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
+        });
+
+        // Initialize and add the map
+        let map;
+        var marker;
+        let position = [];
+        
+
+        
+
+        async function initMap() {
+            const { Map } = await google.maps.importLibrary("maps");
+           
+        @foreach (ML.Cine cine in Model.Cines)
+            {
+                <text>
+                                         
+
+
+                            var geocodes = new google.maps.Geocoder();
+                            geocodes.geocode({ 'address': '@cine.Direccion' }, function (results, status) {
+                                if (status == 'OK') {
+                                    var direccion = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+                                     new google.maps.Marker({
+                                         position: direccion,
+                                        map,
+                                    });
+                                }
+                            });
+
+                        // // Add a click listener for each marker, and set up the info window.
+                        // direccion.addListener("click", ({ domEvent, latLng }) => {
+                        //     const { target } = domEvent;
+                        //      let infowindow = new google.maps.InfoWindow({
+                        //        content: "@cine.Nombre",
+                        //        content: "@cine.Direccion",                                
+                        //      });
+                        //     infoWindow.close()
+                        //     infoWindow.open(direccion.map, direccion);
+                        // });
+           
+
+
+                </text>
+                }
+            // The location of Uluru
+            const position = { lat: 19.430570307662446, lng: -99.16166352568936 };
+            // Request needed libraries.
+
+           
+            // The map, centered at Uluru
+            map = new Map(document.getElementById("map"), {
+                zoom: 13,
+                center: position,
+                mapId: "DEMO_MAP_ID",
+            });
+
+        //
+         }
+       
+
+        initMap();
+
+
+        window.onload = function () {
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                theme: "dark2",
+                exportFileName: "Doughnut Chart",
+                exportEnabled: true,
+                animationEnabled: true,
+                title: {
+                    text: "Monthly Expense"
+                },
+                legend: {
+                    cursor: "pointer",
+                    itemclick: explodePie
+                },
+                data: [{
+                    type: "doughnut",
+                    innerRadius: 90,
+                    showInLegend: true,
+                    toolTipContent: "<b>{name}</b>: ${y} (#percent%)",
+                    indexLabel: "{name} - #percent%",
+                    dataPoints: [
+        @{
+            int norte = 0;
+            int sur = 0;
+            int este = 0;
+            int oeste = 0;
+            foreach (ML.Cine cine in Model.Cines)
+                    {
+                        if(cine.Zona.IdZona== 1)
+                        {
+                             norte =+ cine.Ventas;    
+                        }
+                        else if(cine.Zona.IdZona == 2)
+                        {
+                             sur =+ cine.Ventas;
+                        }else if(cine.Zona.IdZona == 3)
+                        {
+                             este =+ cine.Ventas;
+                        }
+                        else
+                        {
+                             oeste = +cine.Ventas;
+                        }
+                     }
+                     <text>
+
+                        { y: @norte, name: "Norte" },
+                            { y: @sur, name: "Sur" },
+                            { y: @este, name: "Este" },
+                            { y: @oeste, name: "Oeste" },
+                    </text>
+
+                    }
+                        ]
+                }]
+            });
+            chart.render();
+
+            function explodePie(e) {
+                if (typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+                    e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+                } else {
+                    e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+                }
+                e.chart.render();
+            }
+
+        }
+    </script>
+
+}
+
