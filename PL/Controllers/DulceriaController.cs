@@ -1,5 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.IO.Image;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 
 namespace PL.Controllers
 {
@@ -162,6 +174,65 @@ namespace PL.Controllers
         public ActionResult EliminarProductos(int idProducto)
         {
             return View();
+        }
+
+        public ActionResult GenerarPDF()
+        {
+            ML.Venta venta = new ML.Venta();
+            venta.Carrito = new List<object>();
+            GetCarrito(venta);
+
+            // Crear un nuevo documento PDF en una ubicación temporal
+            string rutaTempPDF = Path.GetTempFileName() + ".pdf";
+
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfWriter(rutaTempPDF)))
+            {
+                using (Document document = new Document(pdfDocument))
+                {
+                    document.Add(new Paragraph("Resumen de Compra"));
+
+                    // Crear la tabla para mostrar la lista de objetos
+                    iText.Layout.Element.Table table = new iText.Layout.Element.Table(5); // 5 columnas
+                    table.SetWidth(UnitValue.CreatePercentValue(100)); // Ancho de la tabla al 100% del documento
+
+                    // Añadir las celdas de encabezado a la tabla
+                    table.AddHeaderCell("ID Producto");
+                    table.AddHeaderCell("Producto");
+                    table.AddHeaderCell("Precio Unitario");
+                    table.AddHeaderCell("Cantidad");
+                    table.AddHeaderCell("Imagen");
+
+
+                    foreach (ML.Producto producto in venta.Carrito)
+                    {
+                        table.AddCell(producto.IdProducto.ToString());
+                        table.AddCell(producto.Nombre);
+                        table.AddCell(producto.Precio.ToString());
+                        table.AddCell(producto.Cantidad.ToString());
+                        byte[] imageBytes = Convert.FromBase64String(producto.Imagen);
+                        ImageData data = ImageDataFactory.Create(imageBytes);
+                        Image image = new Image(data);
+                        table.AddCell(image.SetWidth(50).SetHeight(50));
+
+                    }
+
+                    // Añadir la tabla al documento
+                    document.Add(table);
+                }
+            }
+
+            // Leer el archivo PDF como un arreglo de bytes
+            byte[] fileBytes = System.IO.File.ReadAllBytes(rutaTempPDF);
+
+            // Eliminar el archivo temporal
+            System.IO.File.Delete(rutaTempPDF);
+            HttpContext.Session.Remove("Carrito");
+
+            // Descargar el archivo PDF
+            return new FileStreamResult(new MemoryStream(fileBytes), "application/pdf")
+            {
+                FileDownloadName = "ReporteProductos.pdf"
+            };
         }
     }
 }
