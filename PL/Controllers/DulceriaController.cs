@@ -11,7 +11,7 @@ using iText.IO.Image;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
+using iText.Kernel.Colors;
 
 namespace PL.Controllers
 {
@@ -189,18 +189,23 @@ namespace PL.Controllers
             {
                 using (Document document = new Document(pdfDocument))
                 {
-                    document.Add(new Paragraph("Resumen de Compra"));
+                    document.Add(new Paragraph("Resumen de la Compra"));
 
                     // Crear la tabla para mostrar la lista de objetos
                     iText.Layout.Element.Table table = new iText.Layout.Element.Table(5); // 5 columnas
                     table.SetWidth(UnitValue.CreatePercentValue(100)); // Ancho de la tabla al 100% del documento
 
                     // Añadir las celdas de encabezado a la tabla
-                    table.AddHeaderCell("ID Producto");
-                    table.AddHeaderCell("Producto");
+                    
+                    
+                    table.AddHeaderCell("ID Producto").SetFontColor(ColorConstants.WHITE);
+                    table.AddHeaderCell("Producto").SetBackgroundColor(ColorConstants.BLACK);
                     table.AddHeaderCell("Precio Unitario");
                     table.AddHeaderCell("Cantidad");
                     table.AddHeaderCell("Imagen");
+                    
+
+                    
 
 
                     foreach (ML.Producto producto in venta.Carrito)

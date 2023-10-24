@@ -74,46 +74,38 @@
                     <h5 class="modal-title" id="exampleModalLabel">Termina tu compra</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row text-center">
-                        <div class="col-md-6">
-                            @Html.Label("Numero de Tarjeta")
-                            <div class="input-group ">
-                                <span class="input-group-text" id="addonStock"><i class="fa-brands fa-cc-visa"></i></span>
-                                <input type="text" class="form-control" />
-                            </div>
-                            @Html.Label("", null, new { @id = "lblStock" })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.Label("CVV")
-                            <div class="input-group ">
-                                <span class="input-group-text" id="addonStock">CVV</span>
-                                <input type="text" class="form-control" />
-                            </div>
-                            @Html.Label("", null, new { @id = "lblStock" })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.Label("Vencimiento")
-                            <div class="input-group ">
-                                <span class="input-group-text" id="addonStock"><i class="fa-regular fa-calendar"></i></span>
-                                <input type="month" class="form-control" />
-                            </div>
-                            @Html.Label("", null, new { @id = "lblStock" })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Direccion</label>
-                            <input class="form-control col-md-12" id="txtDireccion" type="text"/>
-                        </div>
-                    </div>
-                   
-
-                    <br />
-                </div>
+                <table class="table table-dark table-hover table-bordered table-responsive">
+                    <thead>
+                        <tr class="table-secondary">
+                            <td class="text-center">Nombre</td>
+                            <td class="text-center">Precio</td>
+                            <td class="text-center">Imagen</td>
+                            <td class="text-center">cantidad</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ML.Producto producto in Model.Carrito)
+                        {
+                            <tr>
+                                <td>@producto.Nombre</td>
+                                <td>$ @producto.Precio</td>
+                                @if (producto.Imagen != null)
+                                {
+                                    <td class="text-center"><img id="Img" src="data:image/*;base64,@producto.Imagen" style="width:50px ; height:50px" /></td>
+                                }
+                                else
+                                {
+                                    <td class="text-center"><img id="Img" src="https://st.depositphotos.com/2934765/53192/v/450/depositphotos_531920820-stock-illustration-photo-available-vector-icon-default.jpg" style="width:50px ; height:50px" /></td>
+                                }
+                                <td>@producto.Cantidad </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
-                    <a onclick="ModalCompra()" id="btnGuardar" class="btn btn-dark"><i class="fa-solid fa-truck"></i> Pedir</a>
+                    <a onclick="ModalCompra()" id="btnGuardar" class="btn btn-dark"><i class="fa-solid fa-truck"></i>Comprar</a>
                 </div>
             </div>
         }
@@ -129,7 +121,7 @@
             <div class="modal-body">
                 <div class="row text-center">
                     <h2 class="text-center">Tu pedido esta en proceso!</h2>
-                    <img src="https://i.pinimg.com/originals/62/dd/c4/62ddc455488a13d67f4198a09dc4bb29.gif" width="50" height="520" />
+                    <img src="https://i.pinimg.com/originals/62/dd/c4/62ddc455488a13d67f4198a09dc4bb29.gif" width="50" height="400" />
                 </div>
 
             </div>
